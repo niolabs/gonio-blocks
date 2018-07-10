@@ -7,32 +7,39 @@ import (
 
 	"github.com/niolabs/gonio-framework"
 	"golang.org/x/exp/io/i2c"
+	"encoding/json"
+	"fmt"
 )
 
 const (
-	EARTH_GRAVITY_MS2 = 9.80665
-	SCALE_MULTIPLIER  = 0.004
+	earthGravityMs2 = 9.80665
+	scaleMultiplier = 0.004
 
-	DATA_FORMAT = 0x31
-	BW_RATE     = 0x2C
-	POWER_CTL   = 0x2D
+	dataFormat = 0x31
+	bwRate     = 0x2C
+	powerCtl   = 0x2D
 
-	BW_RATE_1600HZ = 0x0F
-	BW_RATE_800HZ  = 0x0E
-	BW_RATE_400HZ  = 0x0D
-	BW_RATE_200HZ  = 0x0C
-	BW_RATE_100HZ  = 0x0B
-	BW_RATE_50HZ   = 0x0A
-	BW_RATE_25HZ   = 0x09
+	bwRate1600HZ = 0x0F
+	bwRate800HZ  = 0x0E
+	bwRate400HZ  = 0x0D
+	bwRate200HZ  = 0x0C
+	bwRate100HZ  = 0x0B
+	bwRate50HZ   = 0x0A
+	bwRate25HZ   = 0x09
 
-	RANGE_2G  = 0x00
-	RANGE_4G  = 0x01
-	RANGE_8G  = 0x02
-	RANGE_16G = 0x03
+	range16G = 0x03
+	range8G  = 0x02
+	range4G  = 0x01
+	range2G  = 0x00
 
-	MEASURE   = 0x08
-	SLEEP     = 0x04
-	AXES_DATA = 0x32
+	measure  = 0x08
+	sleep    = 0x04
+	axesData = 0x32
+)
+
+var (
+	enablePayload  = []byte{powerCtl, measure}
+	disablePayload = []byte{powerCtl, sleep}
 )
 
 type adxl345 struct {
@@ -40,36 +47,36 @@ type adxl345 struct {
 }
 
 func (a adxl345) SetBandwidthRate(rate uint8) error {
-	return a.Device.WriteReg(BW_RATE, []byte{rate})
+	return a.Device.WriteReg(bwRate, []byte{rate})
 }
 
 func (a adxl345) EnableMeasurement() error {
-	return a.Device.WriteReg(POWER_CTL, []byte{MEASURE})
+	return a.Device.Write(enablePayload)
 }
 
 func (a adxl345) DisableMeasurement() error {
-	return a.Device.WriteReg(POWER_CTL, []byte{SLEEP})
+	return a.Device.Write(disablePayload)
 }
 
 func (a adxl345) SetRange(rangeFlag uint8) error {
-	readBuffer := make([]byte, 1)
-	if err := a.Device.ReadReg(DATA_FORMAT, readBuffer); err != nil {
+	buffer := make([]byte, 1)
+	if err := a.Device.ReadReg(dataFormat, buffer); err != nil {
 		return err
 	}
-	value := readBuffer[0]
+	value := buffer[0]
 	value &^= uint8(0xf)
 	value |= rangeFlag
 	value |= 0x08
-	return a.Device.WriteReg(DATA_FORMAT, []byte{value})
+	return a.Device.Write([]byte{dataFormat, value})
 }
 
-type RawSample struct {
+type rawSample struct {
 	X, Y, Z int16
 }
 
-func (a adxl345) getRaw() (sample RawSample, err error) {
+func (a adxl345) getRaw() (sample rawSample, err error) {
 	buffer := make([]byte, 6)
-	if err := a.ReadReg(AXES_DATA, buffer); err != nil {
+	if err := a.ReadReg(axesData, buffer); err != nil {
 		return sample, err
 	}
 	return sample, binary.Read(bytes.NewBuffer(buffer), binary.LittleEndian, &sample)
@@ -80,9 +87,9 @@ func (a adxl345) getGs() (x, y, z float64, err error) {
 	if err != nil {
 		return 0, 0, 0, err
 	}
-	x = float64(sample.X) * SCALE_MULTIPLIER
-	y = float64(sample.Y) * SCALE_MULTIPLIER
-	z = float64(sample.Z) * SCALE_MULTIPLIER
+	x = float64(sample.X) * scaleMultiplier
+	y = float64(sample.Y) * scaleMultiplier
+	z = float64(sample.Z) * scaleMultiplier
 	return
 }
 
@@ -91,35 +98,46 @@ func (a adxl345) getMps() (x, y, z float64, err error) {
 	if err != nil {
 		return 0, 0, 0, err
 	}
-	x *= EARTH_GRAVITY_MS2
-	y *= EARTH_GRAVITY_MS2
-	z *= EARTH_GRAVITY_MS2
+	x *= earthGravityMs2
+	y *= earthGravityMs2
+	z *= earthGravityMs2
 	return
 }
 
 type ADXL345Block struct {
 	nio.Transformer
+	Config struct {
+		nio.BlockConfigAtom
+		PollingRate string `json:"rate"`
+		Range       string `json:"range"`
+		Bus         uint   `json:"bus"`
+	}
 }
 
 func (b *ADXL345Block) Configure(config nio.RawBlockConfig) error {
 	b.Transformer.Configure()
+
+	if err := json.Unmarshal(config, &b.Config); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (b *ADXL345Block) Start(ctx context.Context) {
-	i2cDevice, err := i2c.Open(&i2c.Devfs{Dev: "/dev/i2c-0"}, 0x53)
+	device := fmt.Sprintf("/dev/i2c-%d", b.Config.Bus)
+	i2cDevice, err := i2c.Open(&i2c.Devfs{Dev: device}, 0x53)
 	if err != nil {
 		panic(err)
 	}
 	defer i2cDevice.Close()
 
 	adxl := adxl345{i2cDevice}
-
-	if err := adxl.SetBandwidthRate(BW_RATE_25HZ); err != nil {
+	if err := adxl.SetBandwidthRate(bwRate25HZ); err != nil {
 		panic(err)
 	}
 
-	if err := adxl.SetRange(RANGE_16G); err != nil {
+	if err := adxl.SetRange(range16G); err != nil {
 		panic(err)
 	}
 
@@ -147,4 +165,9 @@ func (b *ADXL345Block) Start(ctx context.Context) {
 
 func (b *ADXL345Block) Enqueue(terminal nio.Terminal, signals nio.SignalGroup) error {
 	return b.Transformer.Enqueue(terminal, signals, 1)
+}
+
+var ADXL345 = nio.BlockTypeEntry{
+	Create:     func() nio.Block { return &ADXL345Block{} },
+	Definition: nio.BlockTypeDefinition{},
 }
