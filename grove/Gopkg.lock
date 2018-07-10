@@ -2,19 +2,9 @@
 
 
 [[projects]]
-  branch = "master"
-  name = "github.com/Shopify/go-lua"
-  packages = ["."]
-  revision = "d97add4bf105cd6563db108af5a58dbce10337ae"
-
-[[projects]]
   branch = "next"
   name = "github.com/niolabs/gonio-framework"
-  packages = [
-    ".",
-    "props",
-    "props/parser"
-  ]
+  packages = ["."]
   revision = "29d1550fd90875ec32aa30fa9905f80192902379"
 
 [[projects]]
@@ -29,6 +19,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "65bff3568b25bee2673062e651cc5792771b2a698bbb6fbfa6d6bbccbca5c770"
+  inputs-digest = "5f3762020663bb34185d4d0a8f28ad750d9098cfa1ed7e140c9b666bd7fd5e31"
   solver-name = "gps-cdcl"
   solver-version = 1
