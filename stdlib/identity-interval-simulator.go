@@ -80,7 +80,7 @@ func (iis *IdentityIntervalSimulatorBlock) Start(ctx context.Context) {
 }
 
 var IdentityIntervalSimulator = nio.BlockTypeEntry{
-	Create: nil,
+	Create: func() nio.Block { return &IdentityIntervalSimulatorBlock{} },
 	Definition: nio.BlockTypeDefinition{
 		Version: "0.2.0",
 		BlockAttributes: nio.BlockAttributes{
