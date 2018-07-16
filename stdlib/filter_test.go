@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/niolabs/gonio-framework"
-	. "github.com/niolabs/gonio-framework/stdlib"
+	. "github.com/niolabs/gonio-blocks/stdlib"
 	"github.com/stretchr/testify/assert"
 )
 
