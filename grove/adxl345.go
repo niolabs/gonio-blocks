@@ -150,7 +150,7 @@ func (b *ADXL345Block) Start(ctx context.Context) {
 		select {
 		case <-b.ChIn:
 			x, y, z, err := adxl.getGs()
-			if err != nil {
+			if err == nil {
 				b.Notify(nio.DefaultTerminal, nio.SignalGroup{
 					{"x": x, "y": y, "z": z},
 				})
