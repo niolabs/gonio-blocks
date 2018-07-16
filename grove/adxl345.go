@@ -174,6 +174,90 @@ var DefaultADXL345 = nio.BlockTypeEntry{
 func NewADXL345(bus uint) nio.BlockTypeEntry {
 	return nio.BlockTypeEntry{
 		Create:     func() nio.Block { return &ADXL345Block{bus: bus} },
-		Definition: nio.BlockTypeDefinition{},
+		Definition: nio.BlockTypeDefinition{
+			Version: "0.0.0",
+			BlockAttributes: nio.BlockAttributes{
+				Outputs: []nio.TerminalDefinition{
+					{
+						Label:       "default",
+						Type:        "output",
+						Visible:     true,
+						Order:       0,
+						ID:          "__default_terminal_value",
+						Default:     true,
+					},
+				},
+				Inputs: []nio.TerminalDefinition{
+					{
+						Label:       "default",
+						Type:        "input",
+						Visible:     true,
+						Order:       0,
+						ID:          "__default_terminal_value",
+						Default:     true,
+					},
+				},
+			},
+			Namespace: "blocks.accelerometer_chips.device_accelerometer_block.DeviceAccelerometer",
+			Properties: map[nio.Property]nio.PropertyDefinition{
+				"type": {
+					"order": nil,
+					"advanced": false,
+					"visible": false,
+					"title": "Type",
+					"type": "StringType",
+					"readonly": true,
+					"allow_none": false,
+					"default": nil,
+				},
+				"version": {
+					"order": nil,
+					"type": "StringType",
+					"advanced": true,
+					"visible": true,
+					"default": "0.0.0",
+					"allow_none": false,
+					"title": "Version",
+				},
+				"id": {
+					"order": nil,
+					"type": "StringType",
+					"advanced": false,
+					"visible": false,
+					"default": nil,
+					"allow_none": false,
+					"title": "Id",
+				},
+				"name": {
+					"order": nil,
+					"type": "StringType",
+					"advanced": false,
+					"visible": false,
+					"default": nil,
+					"allow_none": true,
+					"title": "Name",
+				},
+				"log_level": {
+					"order": nil,
+					"options": map[string]int{
+						"WARNING": 30,
+						"NOTSET": 0,
+						"ERROR": 40,
+						"INFO": 20,
+						"DEBUG": 10,
+						"CRITICAL": 50,
+					},
+					"advanced": true,
+					"visible": true,
+					"title": "Log Level",
+					"type": "SelectType",
+					"enum": "LogLevel",
+					"allow_none": false,
+					"default": "NOTSET",
+				},
+			},
+			Commands: map[nio.Command]nio.CommandDefinition{},
+			Name: "DeviceAccelerometer",
+		},
 	}
 }
