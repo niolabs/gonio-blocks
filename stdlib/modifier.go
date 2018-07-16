@@ -16,7 +16,7 @@ type ModifierBlock struct {
 type ModifierBlockConfig struct {
 	nio.BlockConfigAtom
 	Exclude props.BooleanProperty `json:"exclude"`
-	Fields []struct {
+	Fields  []struct {
 		Title   props.StringProperty `json:"title"`
 		Formula *props.AnyProperty   `json:"formula"`
 	} `json:"fields"`

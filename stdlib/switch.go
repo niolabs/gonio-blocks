@@ -2,8 +2,8 @@ package stdlib
 
 import (
 	"context"
-	"sync"
 	"encoding/json"
+	"sync"
 
 	"github.com/niolabs/gonio-framework"
 	"github.com/niolabs/gonio-framework/mixins"
