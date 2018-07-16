@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	earthGravityMs2 = 9.80665
+	gMps2           = 9.80665
 	scaleMultiplier = 0.004
 
 	dataFormat = 0x31
@@ -98,9 +98,9 @@ func (a adxl345) getMps() (x, y, z float64, err error) {
 	if err != nil {
 		return 0, 0, 0, err
 	}
-	x *= earthGravityMs2
-	y *= earthGravityMs2
-	z *= earthGravityMs2
+	x *= gMps2
+	y *= gMps2
+	z *= gMps2
 	return
 }
 
@@ -108,10 +108,9 @@ type ADXL345Block struct {
 	nio.Transformer
 	Config struct {
 		nio.BlockConfigAtom
-		PollingRate string `json:"rate"`
-		Range       string `json:"range"`
-		Bus         uint   `json:"bus"`
 	}
+
+	bus uint
 }
 
 func (b *ADXL345Block) Configure(config nio.RawBlockConfig) error {
@@ -125,7 +124,7 @@ func (b *ADXL345Block) Configure(config nio.RawBlockConfig) error {
 }
 
 func (b *ADXL345Block) Start(ctx context.Context) {
-	device := fmt.Sprintf("/dev/i2c-%d", b.Config.Bus)
+	device := fmt.Sprintf("/dev/i2c-%d", b.bus)
 	i2cDevice, err := i2c.Open(&i2c.Devfs{Dev: device}, 0x53)
 	if err != nil {
 		panic(err)
@@ -133,7 +132,7 @@ func (b *ADXL345Block) Start(ctx context.Context) {
 	defer i2cDevice.Close()
 
 	adxl := adxl345{i2cDevice}
-	if err := adxl.SetBandwidthRate(bwRate25HZ); err != nil {
+	if err := adxl.SetBandwidthRate(bwRate100HZ); err != nil {
 		panic(err)
 	}
 
@@ -150,7 +149,7 @@ func (b *ADXL345Block) Start(ctx context.Context) {
 	for {
 		select {
 		case <-b.ChIn:
-			x, y, z, err := adxl.getMps()
+			x, y, z, err := adxl.getGs()
 			if err != nil {
 				b.Notify(nio.DefaultTerminal, nio.SignalGroup{
 					{"x": x, "y": y, "z": z},
@@ -167,7 +166,14 @@ func (b *ADXL345Block) Enqueue(terminal nio.Terminal, signals nio.SignalGroup) e
 	return b.Transformer.Enqueue(terminal, signals, 1)
 }
 
-var ADXL345 = nio.BlockTypeEntry{
-	Create:     func() nio.Block { return &ADXL345Block{} },
+var DefaultADXL345 = nio.BlockTypeEntry{
+	Create:     func() nio.Block { return &ADXL345Block{bus: 0} },
 	Definition: nio.BlockTypeDefinition{},
+}
+
+func NewADXL345(bus uint) nio.BlockTypeEntry {
+	return nio.BlockTypeEntry{
+		Create:     func() nio.Block { return &ADXL345Block{bus: bus} },
+		Definition: nio.BlockTypeDefinition{},
+	}
 }
