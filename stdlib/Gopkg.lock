@@ -20,10 +20,9 @@
     ".",
     "mixins",
     "props",
-    "props/parser",
-    "stdlib"
+    "props/parser"
   ]
-  revision = "29d1550fd90875ec32aa30fa9905f80192902379"
+  revision = "89895f802f8efa050d5d393be337ab07ac0af00b"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -40,6 +39,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b55e104062512cc3bd873c24a4dd122cfdd1893705343b32c4ab135944b79897"
+  inputs-digest = "be48a27a93cd3b42c1ec9341f72329ed6f6e33dce3dec0bdeb7bffee0d14dcc4"
   solver-name = "gps-cdcl"
   solver-version = 1
