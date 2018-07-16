@@ -166,7 +166,7 @@ var Modifier = nio.BlockTypeEntry{
 						"title":      "Attribute Value",
 					},
 				},
-				"default": [],
+				"default": []interface{}{},
 			},
 			"id": {
 				"order":      nil,
