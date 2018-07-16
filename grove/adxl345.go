@@ -47,7 +47,7 @@ type adxl345 struct {
 }
 
 func (a adxl345) SetBandwidthRate(rate uint8) error {
-	return a.Device.WriteReg(bwRate, []byte{rate})
+	return a.Device.Write([]byte{bwRate, rate})
 }
 
 func (a adxl345) EnableMeasurement() error {
