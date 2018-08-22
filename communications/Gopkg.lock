@@ -27,14 +27,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:acc2f936a4d20d7cc26c8500d8d26886a369986a4daf99bffa3d3c631d3f2319"
+  digest = "1:f04f0dc85036ebadd63fde19f8fd4f4974efef74f53809d6566a944c6af34996"
   name = "github.com/pubkeeper/go-client"
   packages = [
     ".",
     "pipeline",
   ]
   pruneopts = "UT"
-  revision = "2d356e6e4d3255498412fb49c62ffd535d28713f"
+  revision = "cc1e713a2cab814e89b4ee73f752b3c700a4b3aa"
 
 [solve-meta]
   analyzer-name = "dep"
