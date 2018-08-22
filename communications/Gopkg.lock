@@ -2,35 +2,46 @@
 
 
 [[projects]]
+  digest = "1:26f2ad8a198a88c3605401186a6be538326e7fbf1f14cb3ef4e0027c4f755f2a"
+  name = "github.com/gofrs/uuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "d41eeda0759468834c84365a32d1b1ec4264c75f"
+  version = "v3.1.0"
+
+[[projects]]
+  digest = "1:43dd08a10854b2056e615d1b1d22ac94559d822e1f8b6fcc92c1a1057e85188e"
   name = "github.com/gorilla/websocket"
   packages = ["."]
+  pruneopts = "UT"
   revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
   version = "v1.2.0"
 
 [[projects]]
   branch = "next"
+  digest = "1:2a365c2bb048b2782ee8d3a5a62265427f39596c093e4da5751be487f76580d3"
   name = "github.com/niolabs/gonio-framework"
   packages = ["."]
+  pruneopts = "UT"
   revision = "29d1550fd90875ec32aa30fa9905f80192902379"
 
 [[projects]]
   branch = "master"
+  digest = "1:acc2f936a4d20d7cc26c8500d8d26886a369986a4daf99bffa3d3c631d3f2319"
   name = "github.com/pubkeeper/go-client"
   packages = [
     ".",
-    "pipeline"
+    "pipeline",
   ]
-  revision = "e1e0e63dc2ea90e0a7edabbfa858ef213acbb431"
-
-[[projects]]
-  name = "github.com/satori/go.uuid"
-  packages = ["."]
-  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
-  version = "v1.2.0"
+  pruneopts = "UT"
+  revision = "2d356e6e4d3255498412fb49c62ffd535d28713f"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3617a4de07d3030cdaa8552bc0a5d07b1f8ccddf08600f44068c00b48bffd737"
+  input-imports = [
+    "github.com/niolabs/gonio-framework",
+    "github.com/pubkeeper/go-client",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
